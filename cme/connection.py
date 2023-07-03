@@ -388,16 +388,21 @@ class connection(object):
                 for user_index, user in enumerate(username):
                     if self.try_credentials(domain[user_index], user, owned[user_index], secr, cred_type[secr_index], data[secr_index]):
                         owned[user_index] = True
-                        if not self.args.continue_on_success:
+                        if self.args.continue_until_admin and self.admin_privs:
+                            return True
+                        if not (self.args.continue_on_success or self.args.continue_until_admin):
                             return True
         else:
+
             if len(username) != len(secret):
                 self.logger.error("Number provided of usernames and passwords/hashes do not match!")
                 return False
             for user_index, user in enumerate(username):
                 if self.try_credentials(domain[user_index], user, owned[user_index], secret[user_index], cred_type[user_index], data[user_index]) and not self.args.continue_on_success:
                     owned[user_index] = True
-                    if not self.args.continue_on_success:
+                    if self.args.continue_until_admin and self.admin_privs:
+                        return True
+                    if not (self.args.continue_on_success or self.args.continue_until_admin):
                         return True
 
     def mark_pwned(self):

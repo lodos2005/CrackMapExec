@@ -607,8 +607,7 @@ class smb(connection):
             self.smbv1 = False
         except socket.error as e:
             if str(e).find("Too many open files") != -1:
-                if not logger is None:
-                    self.logger.fail(f"SMBv3 connection error on {self.host if not kdc else kdc}: {e}")
+                self.logger.fail(f"SMBv3 connection error on {self.host if not kdc else kdc}: {e}")
             return False
         except (Exception, NetBIOSTimeout) as e:
             self.logger.info(f"Error creating SMBv3 connection to {self.host if not kdc else kdc}: {e}")
@@ -630,10 +629,7 @@ class smb(connection):
         except:
             pass
         else:
-            try:
-                dce.bind(scmr.MSRPC_UUID_SCMR)
-            except:
-                pass
+            dce.bind(scmr.MSRPC_UUID_SCMR)
             try:
                 # 0xF003F - SC_MANAGER_ALL_ACCESS
                 # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685981(v=vs.85).aspx
